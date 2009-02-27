@@ -1,0 +1,2 @@
+steps = FindVersion, ChangeVersion, CheckChangeLog, Manifest, DistTest, Commit, Tag, DistClean
+svk.tagpattern = release-%v
