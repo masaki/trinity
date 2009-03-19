@@ -9,24 +9,21 @@ with 'MouseX::Getopt';
 has 'environment' => (
     is      => 'rw',
     isa     => 'Str',
+    lazy    => 1,
     default => 'development',
-);
-
-has 'interface' => (
-    is       => 'rw',
-    isa      => 'Str',
-    default  => 'ServerSimple',
 );
 
 has 'host' => (
     is       => 'rw',
     isa      => 'Str',
+    lazy    => 1,
     default  => 'localhost',
 );
 
 has 'port' => (
     is       => 'rw',
     isa      => 'Int',
+    lazy    => 1,
     default  => 3000,
 );
 
@@ -39,12 +36,14 @@ has 'appclass' => (
 has 'restart' => (
     is      => 'rw',
     isa     => 'Bool',
+    lazy    => 1,
     default => 0
 );
 
 has 'help' => (
     is      => 'rw',
     isa     => 'Bool',
+    lazy    => 1,
     default => 0
 );
 
@@ -61,12 +60,14 @@ sub run {
 
     my $engine = Trinity::Engine->new(
         environment => $self->environment,
-        interface   => $self->interface,
+        interface   => 'ServerSimple',
         host        => $self->host,
         port        => $self->port,
         restart     => $self->restart,
+        appclass    => $self->appclass,
+        %args,
     );
-    $engine->run(appclass => $self->appclass, %args);
+    $engine->run;
 }
 
 no Mouse; __PACKAGE__->meta->make_immutable;

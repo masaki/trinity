@@ -1,6 +1,7 @@
 package Trinity::Application;
 
 use Mouse;
+use HTTP::Engine::Response;
 use Module::Pluggable::Object;
 
 with 'Trinity::Role::Path';
@@ -91,6 +92,12 @@ sub load_component {
             return $self->load_component($fullname);
         };
     }
+}
+
+sub handle_request {
+    my ($self, $req) = @_;
+    # TODO: not implemented yet
+    return HTTP::Engine::Response->new;
 }
 
 no Mouse; 1;

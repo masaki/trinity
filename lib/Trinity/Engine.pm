@@ -11,20 +11,23 @@ has 'environment' => (
 );
 
 has 'interface' => (
-    is       => 'rw',
-    isa      => 'Str',
-    default  => 'ServerSimple',
+    is      => 'rw',
+    isa     => 'Str',
+    lazy    => 1,
+    default => 'ServerSimple',
 );
 
 has 'host' => (
     is       => 'rw',
     isa      => 'Str',
+    lazy    => 1,
     default  => 'localhost',
 );
 
 has 'port' => (
     is       => 'rw',
     isa      => 'Int',
+    lazy    => 1,
     default  => 3000,
 );
 
@@ -39,7 +42,6 @@ has 'http_engine' => (
     is         => 'rw',
     isa        => 'HTTP::Engine',
     lazy_build => 1,
-    handles    => ['run'],
 );
 
 sub _build_environment {
@@ -54,7 +56,6 @@ sub _build_environment {
 sub _build_http_engine {
     my $self = shift;
 
-    #Trinity::Log->log(debug => "Initializing with HTTP::Engine version $HTTP::Engine::VERSION");
     return HTTP::Engine->new(
         interface => {
             module => $self->interface,
@@ -100,7 +101,7 @@ sub run {
     };
 }
 
-no Mouse; __PACKAGE__->meta->make_immutable;
+no Mouse; 1;
 
 =head1 NAME
 
