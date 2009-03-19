@@ -4,12 +4,10 @@ use strict;
 use warnings;
 
 sub env_value {
-    my ($class, $key) = @_;
+    my ($class, $key) = map { uc } @_;
+    return unless $key;
 
     $class =~ s/::/_/g;
-    $class = uc $class;
-    $key = uc $key;
-
     my @prefixes = ($class, 'TRINITY');
     for my $prefix (@prefixes) {
         if (exists $ENV{"${prefix}_${key}"}) {
