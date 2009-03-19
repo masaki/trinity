@@ -1,6 +1,9 @@
 package Trinity;
 
 use 5.008_001;
+use strict;
+use warnings;
+use utf8;
 use Mouse;
 use Mouse::Meta::Class;
 
@@ -16,16 +19,27 @@ sub import {
     my $caller = caller;
 
     my $meta = Mouse::Meta::Class->initialize($caller);
-    $meta->superclasses('Mouse::Object', 'Trinity::Application');
+    $meta->superclasses('Trinity::Application');
 
-    Mouse->import;
+    no strict 'refs';
+    no warnings 'redefine';
+    *{ $caller . '::meta' } = sub { $meta };
+
+    for my $keyword (@Mouse::EXPORT) {
+        *{ $caller . ':: ' . $keyword } = \&{ 'Mouse::' . $keyword };
+    }
 }
 
 sub unimport {
-    Mouse->unimport;
+    my $caller = caller;
+
+    no strict 'refs';
+    for my $keyword (@Mouse::EXPORT) {
+        delete ${ $caller . '::' }{$keyword};
+    }
 }
 
-no Mouse; __PACKAGE__->meta->make_immutable;
+no Mouse;
 
 =head1 NAME
 
@@ -36,10 +50,6 @@ Trinity - A Web Application Framework
     package MyApp;
     use Trinity;
 
-=head1 DESCRIPTION
-
-Trinity is
-
 =head1 AUTHOR
 
 NAKAGAWA Masaki E<lt>masaki@cpan.orgE<gt>
@@ -48,7 +58,5 @@ NAKAGAWA Masaki E<lt>masaki@cpan.orgE<gt>
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself.
-
-=head1 SEE ALSO
 
 =cut

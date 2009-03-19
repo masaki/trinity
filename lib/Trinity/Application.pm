@@ -25,18 +25,6 @@ has 'setup_finished' => (
     default => 0,
 );
 
-{
-    for my $comp ('model', 'view', 'controller') {
-        $self->meta->add_method(
-            $comp => sub {
-                my ($self, $name) = @_;
-                my $key = join '::', ucfirst($comp), $name;
-                return $self->components->{$key};
-            }
-        );
-    }
-}
-
 after 'setup' => sub { shift->setup_finished(1) };
 
 sub setup {
@@ -48,15 +36,21 @@ sub setup {
     $self->setup_dispatcher;
 }
 
-sub setup_config {}
-sub setup_logger {}
+sub setup_config {
+    # TODO: not implemented yet
+}
+
+sub setup_logger {
+    # TODO: not implemented yet
+}
 
 sub setup_components {
     my $self = shift;
 
     my @paths = qw/::Controller ::View ::Model/;
+    my $appname = $self->meta->name;
     my $locator = Module::Pluggable::Object->new(
-        search_path => [ map { $self->meta->name . $_ } @paths ],
+        search_path => [ map { $appname . $_ } @paths ],
     );
 
     for my $component ($locator->plugins) {
@@ -64,25 +58,42 @@ sub setup_components {
     }
 }
 
-sub setup_dispatcher {}
+sub setup_dispatcher {
+    # TODO: not implemented yet
+}
 
 sub load_component {
-    my ($self, $component) = @_;
+    my ($self, $fullname) = @_;
 
-    unless (Mouse::is_class_loaded($component)) {
-        Mouse::load_class($component);
+    if (exists $self->components->{$fullname}) {
+        return $self->components->{$fullname};
+    }
+
+    unless (Mouse::is_class_loaded($fullname)) {
+        Mouse::load_class($fullname);
     }
 
     my $prefix = $self->meta->name;
-    my $suffix = $component;
-    $suffix =~ s/$prefix\:://;
+    (my $suffix = $fullname) =~ s/$prefix\:://;
 
-    # TODO: apply config
-    my $instance = $component->new;
-    $self->components->{$suffix} = $instance;
+    my $config = $self->config->{$suffix} || {};
+    $self->components->{$fullname} = $fullname->new(app => $self, %$config);
 }
 
-no Mouse; __PACKAGE__->meta->make_immutable;
+{
+    no strict 'refs';
+    for my $keyword (qw/Model View Controller/) {
+        *{ lc $keyword } = sub {
+            my ($self, $name) = @_;
+            return unless defined $name;
+
+            my $fullname = join '::', $self->meta->name, $keyword, $name;
+            return $self->load_component($fullname);
+        };
+    }
+}
+
+no Mouse; 1;
 
 =head1 NAME
 
