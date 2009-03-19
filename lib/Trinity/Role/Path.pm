@@ -11,6 +11,15 @@ has 'home' => (
     lazy_build => 1,
 );
 
+has 'root' => (
+    is      => 'rw',
+    isa     => 'Path::Class::Dir',
+    lazy    => 1,
+    default => sub { shift->home->subdir('root') },
+);
+
+requires 'meta';
+
 sub path_to {
     my ($self, @path) = @_;
 

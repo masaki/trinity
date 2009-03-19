@@ -2,14 +2,19 @@ use inc::Module::Install;
 name 'Trinity';
 all_from 'lib/Trinity.pm';
 
-requires 'Mouse';
+requires 'Mouse' => '0.19';
+requires 'Mouse::Role';
+requires 'Mouse::Meta::Class';
 requires 'MouseX::Getopt';
-requires 'namespace::clean';
+requires 'MouseX::Types::Path::Class';
+
+requires 'Path::Class';
+requires 'Cwd';
 
 requires 'HTTP::Engine';
 requires 'HTTP::Router';
 requires 'HTTP::Status';
-requires 'Path::Class';
+
 requires 'Pod::Usage';
 
 tests 't/*.t';
