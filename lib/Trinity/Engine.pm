@@ -74,10 +74,7 @@ sub BUILDARGS {
     # application
     if (exists $args{appclass}) {
         my $appclass = delete $args{appclass};
-        unless (Mouse::is_class_loaded($appclass)) {
-            Mouse::load_class($appclass);
-        }
-
+        Mouse::load_class($appclass);
         $args{application} = $appclass->new;
     }
 

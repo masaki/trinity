@@ -70,10 +70,7 @@ sub load_component {
         return $self->components->{$fullname};
     }
 
-    unless (Mouse::is_class_loaded($fullname)) {
-        Mouse::load_class($fullname);
-    }
-
+    Mouse::load_class($fullname);
     my $prefix = $self->meta->name;
     (my $suffix = $fullname) =~ s/$prefix\:://;
 
