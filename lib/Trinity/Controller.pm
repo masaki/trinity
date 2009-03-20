@@ -1,7 +1,7 @@
 package Trinity::Controller;
 
 use Trinity::Exporter
-    roles => ['Trinity::Role::Component'];
+    superclasses => ['Trinity::Component'];
 
 1;
 

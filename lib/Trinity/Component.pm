@@ -1,6 +1,6 @@
-package Trinity::Role::Component;
+package Trinity::Component;
 
-use Mouse::Role;
+use Mouse;
 
 has 'app' => (
     is       => 'rw',
@@ -9,11 +9,13 @@ has 'app' => (
     required => 1,
 );
 
-no Mouse::Role; 1;
+no Mouse;
+
+1;
 
 =head1 NAME
 
-Trinity::Role::Component
+Trinity::Component
 
 =head1 AUTHOR
 
