@@ -1,45 +1,12 @@
 package Trinity;
 
 use 5.008_001;
-use strict;
-use warnings;
-use utf8;
-use Mouse;
-use Mouse::Meta::Class;
+use Trinity::Exporter
+    superclasses => ['Trinity::Application'];
 
 our $VERSION = '0.01';
 
-sub import {
-    my $class  = shift;
-
-    strict->import;
-    warnings->import;
-    utf8->import;
-
-    my $caller = caller;
-
-    my $meta = Mouse::Meta::Class->initialize($caller);
-    $meta->superclasses('Trinity::Application');
-
-    no strict 'refs';
-    no warnings 'redefine';
-    *{ $caller . '::meta' } = sub { $meta };
-
-    for my $keyword (@Mouse::EXPORT) {
-        *{ $caller . ':: ' . $keyword } = \&{ 'Mouse::' . $keyword };
-    }
-}
-
-sub unimport {
-    my $caller = caller;
-
-    no strict 'refs';
-    for my $keyword (@Mouse::EXPORT) {
-        delete ${ $caller . '::' }{$keyword};
-    }
-}
-
-no Mouse;
+1;
 
 =head1 NAME
 

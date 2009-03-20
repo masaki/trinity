@@ -1,33 +1,9 @@
 package Trinity::Controller;
 
-use Mouse;
-use Mouse::Meta::Class;
-use Mouse::Util;
+use Trinity::Exporter
+    roles => ['Trinity::Role::Component'];
 
-sub import {
-    my $class = shift;
-
-    strict->import;
-    warnings->import;
-    utf8->import;
-
-    my $caller = caller;
-
-    my $meta = Mouse::Meta::Class->initialize($caller);
-    $meta->superclasses('Mouse::Object');
-
-    no strict 'refs';
-    no warnings 'redefine';
-    *{ $caller . '::meta' } = sub { $meta };
-
-    for my $keyword (@Mouse::EXPORT) {
-        *{ $caller . ':: ' . $keyword } = \&{ 'Mouse::' . $keyword };
-    }
-
-    Mouse::Util::apply_all_roles($meta, 'Trinity::Role::Component');
-}
-
-no Mouse; 1;
+1;
 
 =head1 NAME
 
