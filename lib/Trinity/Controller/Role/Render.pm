@@ -6,7 +6,7 @@ sub display {
     my ($self, $object, @args) = @_;
 
     my $body = $self->render(@args);
-    return $bodt if $body;
+    return $body if $body;
 
     my %vars = @args;
     if (@args % 2) {
