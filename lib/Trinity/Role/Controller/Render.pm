@@ -1,4 +1,4 @@
-package Trinity::Controller::Role::Render;
+package Trinity::Role::Controller::Render;
 
 use Mouse::Role;
 
@@ -114,7 +114,7 @@ no Mouse::Role;
 
 =head1 NAME
 
-Trinity::Controller::Role::Render
+Trinity::Role::Controller::Render
 
 =head1 AUTHOR
 

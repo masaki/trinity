@@ -1,13 +1,8 @@
-package Trinity::Controller;
+package Trinity::View;
 
 use Mouse;
 
 extends 'Trinity::Component';
-
-with qw(
-    Trinity::Role::Controller::Render
-    Trinity::Role::Controller::Responder
-);
 
 no Mouse;
 
@@ -15,7 +10,7 @@ no Mouse;
 
 =head1 NAME
 
-Trinity::Controller
+Trinity::View
 
 =head1 AUTHOR
 
