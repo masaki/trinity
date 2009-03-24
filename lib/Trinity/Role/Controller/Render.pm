@@ -2,36 +2,23 @@ package Trinity::Role::Controller::Render;
 
 use Mouse::Role;
 
-sub display {
-    my ($self, $object, @args) = @_;
-
-    if (my $body = $self->render(@args)) {
-        return $body;
-    }
-
-    my (undef, %vars) = $self->_populate_args(@args);
-
-    my $format = $self->_detect_format(%vars);
-    my $method = "to_${format}";
-    return $object->can($method) ? $object->$method : undef;
-}
+requires 'req', 'path_to';
 
 sub render {
     my ($self, @args) = @_;
 
-    my ($view, %vars) = $self->_populate_args(@args);
-    if ($view) {
-        return $view->render(%vars);
-    }
+    my %args = $self->_populate_args(@args);
 
-    my $format = $self->_detect_format(%vars);
+    my $format = $self->_format_for($args{format});
+    my $depth = $args{depth} || 1;
+
     # forward View with provided
     # TODO: provided_view_for() is not implemented
     if (my $view = $self->provided_view_for($format)) {
-        return $view->render(%vars);
+        return $view->render(%args);
     }
 
-    my $template = $vars{template} || $self->req->path;
+    my $template = $args{template} || $self->req->path;
     my $file = do {
         my @files;
         my $base = "${template}\.${format}\.";
@@ -50,18 +37,32 @@ sub render {
     }
 
     # TODO: render_with_template() is not implemented
-    $self->render_with_template($file, %vars);
+    $self->render_with_template($file, %args);
+}
+
+sub display {
+    my ($self, $object, @args) = @_;
+
+    if (my $body = $self->render(@args, depth => 2)) {
+        return $body;
+    }
+
+    my %args = $self->_populate_args(@args);
+
+    my $format = $self->_format_for($args{format});
+    my $method = "to_${format}";
+    return $object->can($method) ? $object->$method : undef;
 }
 
 sub partial {
-    my ($self, $template, %vars) = @_;
+    my ($self, $template, %args) = @_;
 
     $template = do {
         my @path = split m!/! => $template;
         $path[-1] = "_$path[-1]";
         join '/' => @path;
     };
-    my $format = $vars{format} || $self->req->format || 'html';
+    my $format = $self->_format_for($args{format});
     my $file = do {
         my @files;
         my $base = "${template}\.${format}\.";
@@ -80,32 +81,17 @@ sub partial {
     }
 
     # TODO: render_with_template() is not implemented
-    $self->render_with_template($file, %vars);
+    $self->render_with_template($file, %args);
 }
 
 sub _populate_args {
-    my ($self, @args) = @_;
-    my ($view, %vars) = (undef, @args);
-
-    if (@args % 2) {
-        my $thing = shift @args;
-        %vars = @args;
-
-        # FIXME: is "Trinity::Component::View" good name ?
-        if (blessed $thing and $thing->meta->does_role('Trinity::Component::View')) {
-            $view = $thing;
-        }
-        else {
-            $vars{template} = $thing;
-        }
-    }
-
-    return ($view, %vars);
+    my $self = shift;
+    return (@_ % 2 ? (template => shift, @_) : @_);
 }
 
-sub _detect_format {
-    my ($self, %vars) = @_;
-    return $vars{format} || $self->req->format || 'html';
+sub _format_for {
+    my ($self, $format) = @_;
+    return $format || $self->req->format || 'html';
 }
 
 no Mouse::Role;
@@ -115,6 +101,22 @@ no Mouse::Role;
 =head1 NAME
 
 Trinity::Role::Controller::Render
+
+=head1 METHODS
+
+=head2 $controller->render()
+
+=head2 $controller->render($template, %args)
+
+=head2 $controller->render(%args)
+
+=head2 $controller->display($object)
+
+=head2 $controller->display($object, $template, %args)
+
+=head2 $controller->display($object, %args)
+
+=head2 $controller->partial($name, %args)
 
 =head1 AUTHOR
 
