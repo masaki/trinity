@@ -4,7 +4,7 @@ use Mouse;
 use HTTP::Engine::Response;
 use Module::Pluggable::Object;
 
-with 'Trinity::Role::Path';
+with 'Trinity::Role::Application::Path';
 
 has 'config' => (
     is      => 'rw',
@@ -27,6 +27,8 @@ has 'setup_finished' => (
 );
 
 after 'setup' => sub { shift->setup_finished(1) };
+
+sub name { shift->meta->name }
 
 sub setup {
     my $self = shift;
