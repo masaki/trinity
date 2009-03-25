@@ -20,13 +20,26 @@ has 'components' => (
     default => sub { +{} },
 );
 
+{
+    no strict 'refs';
+    for my $keyword (qw/Model View Controller/) {
+        *{ lc $keyword } = sub {
+            my ($self, $name) = @_;
+            return unless defined $name;
+
+            my $fullname = join '::', $self->meta->name, $keyword, $name;
+            return $self->load_component($fullname);
+        };
+    }
+}
+
+after 'setup' => sub { shift->setup_finished(1) };
+
 has 'setup_finished' => (
     is      => 'rw',
     isa     => 'Bool',
     default => 0,
 );
-
-after 'setup' => sub { shift->setup_finished(1) };
 
 sub setup {
     my $self = shift;
@@ -76,19 +89,6 @@ sub load_component {
 
     my $config = $self->config->{$suffix} || {};
     $self->components->{$fullname} = $fullname->new(app => $self, %$config);
-}
-
-{
-    no strict 'refs';
-    for my $keyword (qw/Model View Controller/) {
-        *{ lc $keyword } = sub {
-            my ($self, $name) = @_;
-            return unless defined $name;
-
-            my $fullname = join '::', $self->meta->name, $keyword, $name;
-            return $self->load_component($fullname);
-        };
-    }
 }
 
 sub handle_request {

@@ -3,7 +3,7 @@ package Trinity::Role::Controller::Response;
 use Mouse::Role;
 use HTTP::Status ':constants';
 
-requires 'res';
+#requires 'res';
 
 sub redirect {
     my ($self, $uri, %args) = @_;

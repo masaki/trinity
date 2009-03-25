@@ -2,7 +2,7 @@ package Trinity::Role::Controller::Render;
 
 use Mouse::Role;
 
-requires 'req', 'path_to';
+#requires 'req', 'path_to';
 
 sub render {
     my ($self, @args) = @_;
