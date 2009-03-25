@@ -28,8 +28,6 @@ has 'setup_finished' => (
 
 after 'setup' => sub { shift->setup_finished(1) };
 
-sub name { shift->meta->name }
-
 sub setup {
     my $self = shift;
 
@@ -51,7 +49,7 @@ sub setup_components {
     my $self = shift;
 
     my @paths = qw/::Controller ::View ::Model/;
-    my $appname = $self->name;
+    my $appname = $self->meta->name;
     my $locator = Module::Pluggable::Object->new(
         search_path => [ map { $appname . $_ } @paths ],
     );
@@ -73,7 +71,7 @@ sub load_component {
     }
 
     Mouse::load_class($fullname);
-    my $prefix = $self->name;
+    my $prefix = $self->meta->name;
     (my $suffix = $fullname) =~ s/$prefix\:://;
 
     my $config = $self->config->{$suffix} || {};
@@ -87,7 +85,7 @@ sub load_component {
             my ($self, $name) = @_;
             return unless defined $name;
 
-            my $fullname = join '::', $self->name, $keyword, $name;
+            my $fullname = join '::', $self->meta->name, $keyword, $name;
             return $self->load_component($fullname);
         };
     }

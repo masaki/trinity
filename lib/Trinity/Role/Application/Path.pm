@@ -11,8 +11,6 @@ has 'home' => (
     lazy_build => 1,
 );
 
-requires 'name';
-
 sub path_to {
     my ($self, @path) = @_;
 
@@ -39,7 +37,7 @@ sub _build_home {
 sub _setup_home_from_env {
     my $self = shift;
 
-    return unless my $env = Trinity::Utils::env_value($self->name, 'HOME');
+    return unless my $env = Trinity::Utils::env_value($self->meta->name, 'HOME');
 
     my $home = dir($env)->absolute->cleanup;
     return -d $home ? $home : undef;
@@ -49,7 +47,7 @@ sub _setup_home_from_path {
     my $self = shift;
 
     # from Catalyst
-    (my $file = sprintf '%s.pm', $self->name) =~ s{::}{/}g;
+    (my $file = sprintf '%s.pm', $self->meta->name) =~ s{::}{/}g;
 
     return unless my $path = $INC{$file};
     $path =~ s/$file$//;
