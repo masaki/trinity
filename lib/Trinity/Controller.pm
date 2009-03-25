@@ -6,7 +6,7 @@ extends 'Trinity::Component';
 
 with qw(
     Trinity::Role::Controller::Render
-    Trinity::Role::Controller::Responder
+    Trinity::Role::Controller::Response
 );
 
 no Mouse;
