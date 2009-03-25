@@ -22,7 +22,7 @@ sub import {
         }
     }
 
-    my $meta = $metaclass->initialize($caller);
+    my $meta = Mouse::Meta::Class->initialize($caller);
     $meta->superclasses(@superclasses);
 
     {

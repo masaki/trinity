@@ -1,8 +1,6 @@
 package Trinity;
 
 use 5.008_001;
-use Trinity::Exporter
-    superclasses => ['Trinity::Application'];
 
 our $VERSION = '0.01';
 
@@ -12,10 +10,9 @@ our $VERSION = '0.01';
 
 Trinity - A Web Application Framework
 
-=head1 SYNOPSIS
+=head1 DESCRIPTION
 
-    package MyApp;
-    use Trinity;
+T.B.D.
 
 =head1 AUTHOR
 
