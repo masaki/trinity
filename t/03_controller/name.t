@@ -1,6 +1,6 @@
 use Test::Base;
 
-plan tests => 3*blocks;
+plan tests => 2*blocks;
 
 do {
     package MyApp;
@@ -25,24 +25,27 @@ run {
     my $block = shift;
 
     my $app = $block->app->new;
-    my $controller = $block->name->new(app => $app);
-    is $controller->name => $block->name, 'name ok';
+    my $controller = $block->controller->new(app => $app);
+
     is $controller->namespace => $block->namespace, 'namespace ok';
     is $controller->suffix => $block->suffix, 'suffix ok';
 }
 
 __END__
-=== MyApp::Controller::Foo
+===
+--- controller: MyApp::Controller::Foo
 --- app: MyApp
 --- namespace: foo
 --- suffix: Foo
 
-=== MyApp::Controller::Bar::Baz
+===
+--- controller: MyApp::Controller::Bar::Baz
 --- app: MyApp
 --- namespace: bar/baz
 --- suffix: Bar::Baz
 
-=== MyApp::Web::Controller::Quux
+===
+--- controller: MyApp::Web::Controller::Quux
 --- app: MyApp::Web
 --- namespace: quux
 --- suffix: Quux

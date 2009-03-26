@@ -9,6 +9,25 @@ with qw(
     Trinity::Role::Controller::Response
 );
 
+sub suffix {
+    my $self = shift;
+    my $suffix;
+    if ($self->meta->name =~ /^.+?::Controller::(.+)$/) {
+        $suffix = $1;
+    }
+    return $suffix;
+}
+
+sub namespace {
+    my $self = shift;
+    my $namespace;
+    if ($self->meta->name =~ /^.+?::Controller::(.+)$/) {
+        $namespace = lc $1;
+        $namespace =~ s!::!/!g;
+    }
+    return $namespace;
+}
+
 no Mouse;
 
 1;
