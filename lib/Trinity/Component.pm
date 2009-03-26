@@ -6,7 +6,6 @@ has 'app' => (
     is       => 'rw',
     isa      => 'Trinity::Application',
     weak_ref => 1,
-    required => 1,
 );
 
 no Mouse;
