@@ -4,6 +4,8 @@ use Mouse::Role;
 use Log::Log4perl;
 use Trinity::Utils;
 
+requires 'path_to';
+
 has 'logger' => (
     is         => 'rw',
     isa        => 'Log::Log4perl',
@@ -28,10 +30,12 @@ sub _build_logger {
 
     my $env   = lc Trinity::Utils::env_value($name, 'ENV') || 'development';
     my $level = $env eq 'production' ? 'INFO' : 'DEBUG';
-    my $file  = $self->path_to('log', "${env}.log")->stringify;
+
+    my $file  = $self->path_to('log', "${env}.log");
+    $file->dir->mkpath unless -e $file->dir;
 
     my $category = $name;
-       $category =~ s/::/\./g;
+    $category =~ s/::/\./g;
 
     my %spec = (
         "log4perl.category.$category" => "$level, Screen, File",
@@ -41,7 +45,7 @@ sub _build_logger {
         'log4perl.appender.Screen.layout.ConversionPattern' => '[%p] %m%n',
 
         'log4perl.appender.File'                          => 'Log::Log4perl::Appender::File',
-        'log4perl.appender.File.filename'                 => $file,
+        'log4perl.appender.File.filename'                 => $file->stringify,
         'log4perl.appender.File.utf8'                     => 1,
         'log4perl.appender.File.layout'                   => 'Log::Log4perl::Layout::PatternLayout',
         'log4perl.appender.File.layout.ConversionPattern' => '[%p] %m%n',
