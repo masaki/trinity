@@ -19,7 +19,7 @@ requires 'Pod::Usage';
 
 tests 't/*.t';
 test_requires 'Test::More';
-test_requires 'ok';
+test_requires 'Test::UseAllModules';
 author_tests 'xt';
 use_test_base;
 

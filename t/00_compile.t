@@ -1,9 +1,2 @@
-use Test::More tests => 5;
-
-use ok 'Trinity';
-use ok 'Trinity::Utils';
-use ok 'Trinity::Application';
-#use ok 'Trinity::Model';
-use ok 'Trinity::View';
-use ok 'Trinity::Controller';
-
+use Test::UseAllModules;
+BEGIN { all_uses_ok(); }
