@@ -8,6 +8,15 @@ has 'app' => (
     weak_ref => 1,
 );
 
+sub suffix {
+    my $self = shift;
+    my $suffix;
+    if ($self->meta->name =~ /^.+?::(?:Model|View|Controller)::(.+)$/) {
+        $suffix = $1;
+    }
+    return $suffix;
+}
+
 no Mouse;
 
 1;
@@ -15,6 +24,10 @@ no Mouse;
 =head1 NAME
 
 Trinity::Component
+
+=head1 METHODS
+
+=head2 suffix
 
 =head1 AUTHOR
 

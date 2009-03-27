@@ -9,15 +9,6 @@ with qw(
     Trinity::Role::Controller::Response
 );
 
-sub suffix {
-    my $self = shift;
-    my $suffix;
-    if ($self->meta->name =~ /^.+?::Controller::(.+)$/) {
-        $suffix = $1;
-    }
-    return $suffix;
-}
-
 sub namespace {
     my $self = shift;
     my $namespace;
@@ -35,6 +26,10 @@ no Mouse;
 =head1 NAME
 
 Trinity::Controller
+
+=head1 METHODS
+
+=head2 namespace
 
 =head1 AUTHOR
 
