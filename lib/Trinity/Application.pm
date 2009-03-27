@@ -72,9 +72,17 @@ sub setup_components {
     }
 }
 
+has 'logger' => (
+    is      => 'rw',
+);
+
 sub setup_logger {
     # TODO: not implemented yet
 }
+
+has 'dispatcher' => (
+    is      => 'rw',
+);
 
 sub setup_dispatcher {
     # TODO: not implemented yet
