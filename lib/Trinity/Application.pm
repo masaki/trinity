@@ -3,8 +3,16 @@ package Trinity::Application;
 use Mouse;
 use HTTP::Engine::Response;
 use Module::Pluggable::Object;
+use Trinity::Utils;
 
-with 'Trinity::Role::Application::Path';
+with qw(
+    Trinity::Role::Application::Path
+    Trinity::Role::Application::Logger
+);
+
+sub setup_path {
+    shift->home; # initialize
+}
 
 has 'config' => (
     is      => 'rw',
@@ -14,7 +22,7 @@ has 'config' => (
 );
 
 sub setup_config {
-    # TODO: not implemented yet
+    shift->config; # initialize
 }
 
 has 'components' => (
@@ -72,12 +80,8 @@ sub setup_components {
     }
 }
 
-has 'logger' => (
-    is      => 'rw',
-);
-
 sub setup_logger {
-    # TODO: not implemented yet
+    shift->logger; # initialize
 }
 
 has 'dispatcher' => (
@@ -99,10 +103,13 @@ has 'setup_finished' => (
 sub setup {
     my $self = shift;
 
+    $self->setup_path;
     $self->setup_config;
     $self->setup_logger;
     $self->setup_components;
     $self->setup_dispatcher;
+
+    return $self;
 }
 
 sub handle_request {
