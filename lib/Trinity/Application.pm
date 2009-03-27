@@ -13,6 +13,10 @@ has 'config' => (
     default => sub { +{} },
 );
 
+sub setup_config {
+    # TODO: not implemented yet
+}
+
 has 'components' => (
     is      => 'rw',
     isa     => 'HashRef',
@@ -30,7 +34,50 @@ has 'components' => (
             my $fullname = join '::', $self->meta->name, $keyword, $name;
             return $self->load_component($fullname);
         };
+
+        *{ lc($keyword) . 's' } = sub {
+            my $self = shift;
+            return grep { $_->meta->name =~ /::${keyword}::/ } values %{ $self->components };
+        };
     }
+}
+
+sub load_component {
+    my ($self, $fullname) = @_;
+
+    if (exists $self->components->{$fullname}) {
+        return $self->components->{$fullname};
+    }
+
+    eval { Mouse::load_class($fullname) } or return;
+    my $prefix = $self->meta->name;
+    (my $suffix = $fullname) =~ s/$prefix\:://;
+
+    my $config = $self->config->{$suffix} || {};
+    $self->components->{$fullname} = $fullname->new(app => $self, %$config);
+}
+
+sub setup_components {
+    my $self = shift;
+
+    my @paths = qw/::Controller ::View ::Model/;
+    my $appname = $self->meta->name;
+    my $locator = Module::Pluggable::Object->new(
+        inner       => 1,
+        search_path => [ map { $appname . $_ } @paths ],
+    );
+
+    for my $component ($locator->plugins) {
+        $self->load_component($component);
+    }
+}
+
+sub setup_logger {
+    # TODO: not implemented yet
+}
+
+sub setup_dispatcher {
+    # TODO: not implemented yet
 }
 
 after 'setup' => sub { shift->setup_finished(1) };
@@ -48,47 +95,6 @@ sub setup {
     $self->setup_logger;
     $self->setup_components;
     $self->setup_dispatcher;
-}
-
-sub setup_config {
-    # TODO: not implemented yet
-}
-
-sub setup_logger {
-    # TODO: not implemented yet
-}
-
-sub setup_components {
-    my $self = shift;
-
-    my @paths = qw/::Controller ::View ::Model/;
-    my $appname = $self->meta->name;
-    my $locator = Module::Pluggable::Object->new(
-        search_path => [ map { $appname . $_ } @paths ],
-    );
-
-    for my $component ($locator->plugins) {
-        $self->load_component($component);
-    }
-}
-
-sub setup_dispatcher {
-    # TODO: not implemented yet
-}
-
-sub load_component {
-    my ($self, $fullname) = @_;
-
-    if (exists $self->components->{$fullname}) {
-        return $self->components->{$fullname};
-    }
-
-    Mouse::load_class($fullname);
-    my $prefix = $self->meta->name;
-    (my $suffix = $fullname) =~ s/$prefix\:://;
-
-    my $config = $self->config->{$suffix} || {};
-    $self->components->{$fullname} = $fullname->new(app => $self, %$config);
 }
 
 sub handle_request {
