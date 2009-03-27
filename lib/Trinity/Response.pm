@@ -1,16 +1,7 @@
 package Trinity::Response;
 
 use Mouse;
-use Mouse::Util::TypeConstraints;
 use HTTP::Status qw(HTTP_FOUND);
-
-subtype 'Trinity::Response'
-    => as 'Object'
-    => where { $_->isa('Trinity::Response') };
-
-coerce 'Trinity::Response'
-    => from 'Object'
-    => via { $_->isa('Trinity::Response') ? $_ : Trinity::Response->new(%$_) };
 
 extends 'HTTP::Engine::Response';
 
@@ -40,7 +31,6 @@ sub redirect {
 }
 
 no Mouse;
-no Mouse::Util::TypeConstraints;
 
 1;
 

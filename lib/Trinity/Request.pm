@@ -1,15 +1,6 @@
 package Trinity::Request;
 
 use Mouse;
-use Mouse::Util::TypeConstraints;
-
-subtype 'Trinity::Request'
-    => as 'Object'
-    => where { $_->isa('Trinity::Request') };
-
-coerce 'Trinity::Request'
-    => from 'Object'
-    => via { $_->isa('Trinity::Request') ? $_ : Trinity::Request->new(%$_) };
 
 extends 'HTTP::Engine::Request';
 
@@ -18,7 +9,6 @@ has 'action' => (
 );
 
 no Mouse;
-no Mouse::Util::TypeConstraints;
 
 1;
 
