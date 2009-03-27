@@ -103,11 +103,13 @@ has 'setup_finished' => (
 sub setup {
     my $self = shift;
 
-    $self->setup_path;
-    $self->setup_config;
-    $self->setup_logger;
-    $self->setup_components;
-    $self->setup_dispatcher;
+    unless ($self->setup_finished) {
+        $self->setup_path;
+        $self->setup_config;
+        $self->setup_logger;
+        $self->setup_components;
+        $self->setup_dispatcher;
+    }
 
     return $self;
 }
