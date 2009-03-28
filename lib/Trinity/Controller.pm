@@ -19,7 +19,10 @@ has 'transaction' => (
     ],
 );
 
-*txn = \&transaction;
+{ # alias
+    no warnings 'once';
+    *txn = \&transaction;
+}
 
 with qw(
     Trinity::Role::Controller::Render

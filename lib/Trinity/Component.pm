@@ -9,7 +9,10 @@ has 'application' => (
     handles  => ['logger'],
 );
 
-*app = \&application;
+{ # alias
+    no warnings 'once';
+    *app = \&application;
+}
 
 sub suffix {
     my $self = shift;

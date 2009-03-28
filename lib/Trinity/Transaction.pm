@@ -28,6 +28,7 @@ has 'action' => (
 );
 
 { # alias
+    no warnings 'once';
     *req = \&request;
     *res = \&response;
 }
