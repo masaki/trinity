@@ -2,6 +2,7 @@ package Trinity::Controller;
 
 use Mouse;
 use Class::Inspector;
+use Trinity::Transaction;
 
 extends 'Trinity::Component';
 
