@@ -1,8 +1,24 @@
 package Trinity::Controller;
 
 use Mouse;
+use Class::Inspector;
 
 extends 'Trinity::Component';
+
+has '+application' => (
+    handles => ['logger', 'home', 'root', 'path_to', 'model', 'view']
+);
+
+has 'transaction' => (
+    is       => 'rw',
+    isa      => 'Trinity::Transaction',
+    weak_ref => 1,
+    handles  => [
+        grep { $_ ne 'meta' } @{ Class::Inspector->functions('Trinity::Transaction') }
+    ],
+);
+
+*txn = \&transaction;
 
 with qw(
     Trinity::Role::Controller::Render
@@ -28,6 +44,8 @@ no Mouse;
 Trinity::Controller
 
 =head1 METHODS
+
+=head2 transaction, txn
 
 =head2 namespace
 

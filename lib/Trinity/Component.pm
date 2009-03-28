@@ -2,11 +2,14 @@ package Trinity::Component;
 
 use Mouse;
 
-has 'app' => (
+has 'application' => (
     is       => 'rw',
     isa      => 'Trinity::Application',
     weak_ref => 1,
+    handles  => ['logger'],
 );
+
+*app = \&application;
 
 sub suffix {
     my $self = shift;
@@ -26,6 +29,8 @@ no Mouse;
 Trinity::Component
 
 =head1 METHODS
+
+=head2 application, app
 
 =head2 suffix
 

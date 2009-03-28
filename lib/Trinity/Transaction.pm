@@ -1,4 +1,4 @@
-package Trinity::Connection;
+package Trinity::Transaction;
 
 use Mouse;
 use Trinity::Types;
@@ -42,7 +42,19 @@ no Mouse;
 
 =head1 NAME
 
-Trinity::Connection
+Trinity::Transaction
+
+=head1 METHODS
+
+=head2 request, req
+
+=head2 response, res
+
+=head2 stash
+
+=head2 action
+
+=head2 uri_for
 
 =head1 AUTHOR
 
