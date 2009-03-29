@@ -3,7 +3,7 @@ package Trinity::Controller::Mixin::Responder;
 use Mouse::Role;
 use HTTP::Status ':constants';
 
-#requires 'res';
+requires 'txn';
 
 sub redirect {
     my ($self, $uri, %args) = @_;
@@ -18,6 +18,7 @@ sub redirect {
 
 sub sendfile {
     # TODO: not implemented yet
+    my ($self, $file) = @_;
 }
 
 no Mouse::Role;
