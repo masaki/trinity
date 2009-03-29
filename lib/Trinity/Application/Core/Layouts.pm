@@ -1,7 +1,8 @@
-package Trinity::Role::Application::Path;
+package Trinity::Application::Core::Layouts;
 
 use Mouse::Role;
 use MouseX::Types::Path::Class;
+use Cwd qw(getcwd);
 use Path::Class qw(file dir);
 use Trinity::Utils;
 
@@ -10,6 +11,8 @@ has 'home' => (
     isa        => 'Path::Class::Dir',
     lazy_build => 1,
 );
+
+sub setup_layouts { shift->home }
 
 sub path_to {
     my ($self, @path) = @_;
@@ -26,10 +29,7 @@ sub _build_home {
     my $home;
     $home ||= $self->_setup_home_from_env;
     $home ||= $self->_setup_home_from_path;
-    $home ||= do {
-        require Cwd;
-        Cwd::getcwd();
-    };
+    $home ||= getcwd;
 
     return $home;
 }
@@ -59,13 +59,20 @@ sub _setup_home_from_path {
     return -d $home ? $home : undef;
 }
 
+{
+    no strict 'refs';
+    for my $keyword (qw(file dir getcwd)) {
+        delete ${ __PACKAGE__ . '::' }{$keyword};
+    }
+}
+
 no Mouse::Role;
 
 1;
 
 =head1 NAME
 
-Trinity::Role::Application::Path
+Trinity::Application::Core::Layouts
 
 =head1 METHODS
 

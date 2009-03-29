@@ -6,13 +6,9 @@ use Module::Pluggable::Object;
 use Trinity::Utils;
 
 with qw(
-    Trinity::Role::Application::Path
-    Trinity::Role::Application::Logger
+    Trinity::Application::Core::Layouts
+    Trinity::Application::Core::Logger
 );
-
-sub setup_path {
-    shift->home; # initialize
-}
 
 has 'config' => (
     is      => 'rw',
@@ -80,10 +76,6 @@ sub setup_components {
     }
 }
 
-sub setup_logger {
-    shift->logger; # initialize
-}
-
 has 'dispatcher' => (
     is      => 'rw',
 );
@@ -92,23 +84,23 @@ sub setup_dispatcher {
     # TODO: not implemented yet
 }
 
-after 'setup' => sub { shift->setup_finished(1) };
-
 has 'setup_finished' => (
     is      => 'rw',
     isa     => 'Bool',
     default => 0,
 );
 
+after 'setup' => sub { shift->setup_finished(1) };
+
 sub setup {
     my $self = shift;
 
     unless ($self->setup_finished) {
-        $self->setup_path;
-        $self->setup_config;
-        $self->setup_logger;
-        $self->setup_components;
-        $self->setup_dispatcher;
+        $self->setup_layouts    if $self->can('setup_layouts');
+        $self->setup_config     if $self->can('setup_config');
+        $self->setup_logger     if $self->can('setup_logger');
+        $self->setup_components if $self->can('setup_components');
+        $self->setup_dispatcher if $self->can('setup_dispatcher');
     }
 
     return $self;
@@ -120,7 +112,9 @@ sub handle_request {
     return HTTP::Engine::Response->new;
 }
 
-no Mouse; 1;
+no Mouse;
+
+1;
 
 =head1 NAME
 

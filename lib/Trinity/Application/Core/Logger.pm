@@ -1,4 +1,4 @@
-package Trinity::Role::Application::Logger;
+package Trinity::Application::Core::Logger;
 
 use Mouse::Role;
 use Log::Log4perl;
@@ -10,19 +10,9 @@ has 'logger' => (
     is         => 'rw',
     isa        => 'Log::Log4perl',
     lazy_build => 1,
-    handles    => [qw(
-        fatal
-        error
-        warn
-        info
-        debug
-        is_fatal
-        is_error
-        is_warn
-        is_info
-        is_debug
-    )],
 );
+
+sub setup_logger { shift->logger }
 
 sub _build_logger {
     my $self = shift;
@@ -61,7 +51,7 @@ no Mouse::Role;
 
 =head1 NAME
 
-Trinity::Role::Application::Logger
+Trinity::Application::Core::Logger
 
 =head2 METHODS
 
