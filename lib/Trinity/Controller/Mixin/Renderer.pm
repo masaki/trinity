@@ -20,15 +20,9 @@ sub render {
         return $body;
     }
 
-    my @files;
-    {
-        my $base = "$args{template}\.$args{format}\.";
-        $self->app->path_to('templates')->recurse(
-            callback => sub {
-                my $file = shift;
-                push @files, $file if -f $file and $file =~ /$base/;
-            },
-        );
+    my @files = do {
+        my $base = $self->app->path_to('templates', "$args{template}.$args{format}.*");
+        glob $base;
     };
     # TODO: exceptionize
     unless (@files) {
@@ -36,7 +30,13 @@ sub render {
     }
 
     # forward Template#render
-    $self->render_with_template($file, %args);
+    my $view = $self->app->view('Template');
+    for my $file (@files) {
+        next unless my $body = $view->render($file, %args);
+        $self->txn->res->body($body);
+        $self->txn->res->status($args{status} || HTTP_OK);
+        return $body;
+    }
 }
 
 sub display {
@@ -98,6 +98,7 @@ sub _format_for {
 }
 
 sub _template_for {
+    # TODO: use action for template
     return shift->txn->req->path;
 }
 
