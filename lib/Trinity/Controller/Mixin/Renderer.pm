@@ -1,57 +1,61 @@
 package Trinity::Controller::Mixin::Renderer;
 
 use Mouse::Role;
+use HTTP::Status qw(:constants);
 
-#requires 'req', 'path_to';
+requires qw(app txn);
 
 sub render {
     my ($self, @args) = @_;
 
     my %args = $self->_populate_args(@args);
+    $args{format}   ||= $self->_format_for;
+    $args{template} ||= $self->_template_for;
 
-    my $format = $self->_format_for($args{format});
-    my $depth = $args{depth} || 1;
-
-    # forward View with provided
-    # TODO: provided_view_for() is not implemented
-    if (my $view = $self->provided_view_for($format)) {
-        return $view->render(%args);
+    # forward View#render
+    if (my $view = $self->app->view_of($args{format})) {
+        my $body = $view->render(%args);
+        $self->txn->res->body($body);
+        $self->txn->res->status($args{status} || HTTP_OK);
+        return $body;
     }
 
-    my $template = $args{template} || $self->req->path;
-    my $file = do {
-        my @files;
-        my $base = "${template}\.${format}\.";
-        $self->path_to('templates')->recurse(
+    my @files;
+    {
+        my $base = "$args{template}\.$args{format}\.";
+        $self->app->path_to('templates')->recurse(
             callback => sub {
                 my $file = shift;
                 push @files, $file if -f $file and $file =~ /$base/;
             },
         );
-        # TODO: templates selection
-        $files[0];
     };
     # TODO: exceptionize
-    unless ($file) {
-        die "Not found template $template.$format.*";
+    unless (@files) {
+        die "Not found template $args{template}.$args{format}.*";
     }
 
-    # TODO: render_with_template() is not implemented
+    # forward Template#render
     $self->render_with_template($file, %args);
 }
 
 sub display {
     my ($self, $object, @args) = @_;
 
-    if (my $body = $self->render(@args, depth => 2)) {
+    my %args = $self->_populate_args(@args);
+    $args{format} ||= $self->_format_for;
+
+    if (my $body = $self->render(%args)) {
         return $body;
     }
 
-    my %args = $self->_populate_args(@args);
+    my $method = "to_$args{format}";
+    return unless $object->can($method);
 
-    my $format = $self->_format_for($args{format});
-    my $method = "to_${format}";
-    return $object->can($method) ? $object->$method : undef;
+    my $body = $object->$method(%args);
+    $self->txn->res->body($body);
+    $self->txn->res->status($args{status} || HTTP_OK);
+    return $body;
 }
 
 sub partial {
@@ -66,7 +70,7 @@ sub partial {
     my $file = do {
         my @files;
         my $base = "${template}\.${format}\.";
-        $self->path_to('templates')->recurse(
+        $self->app->path_to('templates')->recurse(
             callback => sub {
                 my $file = shift;
                 push @files, $file if -f $file and $file =~ /$base/;
@@ -90,8 +94,11 @@ sub _populate_args {
 }
 
 sub _format_for {
-    my ($self, $format) = @_;
-    return $format || $self->req->format || 'html';
+    return shift->txn->req->format || 'html';
+}
+
+sub _template_for {
+    return shift->txn->req->path;
 }
 
 no Mouse::Role;
