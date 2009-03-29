@@ -1,4 +1,4 @@
-package Trinity::Role::Controller::Response;
+package Trinity::Controller::Mixin::Responder;
 
 use Mouse::Role;
 use HTTP::Status ':constants';
@@ -18,13 +18,17 @@ sub redirect {
     return $self->res->header('Location');
 }
 
+sub sendfile {
+    # TODO: not implemented yet
+}
+
 no Mouse::Role;
 
 1;
 
 =head1 NAME
 
-Trinity::Role::Controller::Response
+Trinity::Controller::Mixin::Responder
 
 =head1 METHODS
 

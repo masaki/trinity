@@ -24,11 +24,6 @@ has 'transaction' => (
     *txn = \&transaction;
 }
 
-with qw(
-    Trinity::Role::Controller::Render
-    Trinity::Role::Controller::Response
-);
-
 sub namespace {
     my $self = shift;
     my $namespace;
