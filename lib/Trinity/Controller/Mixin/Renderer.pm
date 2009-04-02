@@ -8,43 +8,33 @@ requires qw(app txn);
 sub render {
     my ($self, @args) = @_;
 
-    my $thing = blessed $args[0] ? shift @args : undef;
+    my $model = blessed $args[0] ? shift @args : undef;
 
     my %args = @args;
-    $args{format} ||= $self->txn->req->format || 'html';
-    $args{locals} ||= $self->_build_local_vars;
+    unless (exists $args{locals}) {
+        $args{locals} = $self->_build_local_vars;
+    }
+    unless (exists $args{format}) {
+        $args{format} = $self->txn->req->format || 'html';
+    }
 
-    # has thing (isa model or view)
-    if (defined $thing) {
-        if ($thing->isa('Trinity::View')) {
-            return $thing->render(%args);
+    # has thing (isa model, really ?)
+    if (defined $model and $model->isa('Trinity::Model')) {
+        my $method = "to_$args{format}";
+        if ($model->can($method)) {
+            return $model->$method(%args);
         }
-        elsif ($thing->isa('Trinity::Model')) {
-            my $method = "to_$args{format}";
-            if ($thing->can($method)) {
-                return $thing->$method(%args);
-            }
-        }
     }
 
-    my @views = $self->app->views;
-    if (my $view = [ grep { $_->accepts($args{format}) } @views ]->[0]) {
-        # forward format-specific view
-        return $view->render(%args);
+    unless (exists $args{template}) {
+        $args{template} = $self->txn->action->namespace;
     }
-
-    my @templates = grep { $_->isa('Trinity::View::Templates') } @views;
-    unless (@templates) {
-        # TODO: exceptionize
-        die 'Not found template view';
+    unless (exists $args{layouts}) {
+        $args{layouts} = 'layouts/' . $self->txn->action->path;
     }
-
-    # TODO: use action for template
-    $args{template} ||= $self->txn->req->path;
-    $args{layouts}  ||= 'layouts/' . $self->namespace;
 
     # forward templates
-    for my $view (@templates) {
+    for my $view ($self->app->views) {
         my $body = $view->render(%args);
         return $body if defined $body;
     }
@@ -78,9 +68,11 @@ Trinity::Controller::Mixin::Renderer
 
 =head2 $controller->render(%args)
 
-=head2 $controller->render($thing)
+=head2 $controller->render($model)
 
-=head2 $controller->render($thing, %args)
+=head2 $controller->render($model, %args)
+
+Returns a rendered string
 
 =head1 AUTHOR
 

@@ -5,13 +5,23 @@ use MouseX::AttributeHelpers;
 
 extends 'Trinity::Component';
 
-has 'accept_formats' => (
-    metaclass => 'Collection::Array',
-    is        => 'rw',
-    isa       => 'ArrayRef',
-    default   => sub { [] },
-    provides  => { find => 'accepts' },
+has 'includes' => (
+    is      => 'rw',
+    isa     => 'ArrayRef',
+    lazy    => 1,
+    default => sub { [ shift->app->path_to('templates') ] },
 );
+
+has 'extension' => (
+    is       => 'rw',
+    isa      => 'Str',
+    required => 1,
+);
+
+has 'engine' => (is => 'rw');
+
+sub render {
+}
 
 no Mouse;
 
@@ -23,7 +33,11 @@ Trinity::View
 
 =head1 METHODS
 
-=head2 accepts
+=head2 includes
+
+=head2 extension
+
+=head2 engine
 
 =head1 AUTHOR
 
