@@ -10,6 +10,17 @@ with qw(
     Trinity::Application::Core::Logger
 );
 
+has 'transaction' => (
+    is       => 'rw',
+    isa      => 'Trinity::Transaction',
+    weak_ref => 1,
+);
+
+{ # alias
+    no warnings 'once';
+    *txn = \&transaction;
+}
+
 has 'config' => (
     is      => 'rw',
     isa     => 'HashRef',

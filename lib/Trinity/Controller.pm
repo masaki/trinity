@@ -10,20 +10,6 @@ has '+application' => (
     handles => ['logger', 'home', 'root', 'path_to', 'model', 'view']
 );
 
-has 'transaction' => (
-    is       => 'rw',
-    isa      => 'Trinity::Transaction',
-    weak_ref => 1,
-    handles  => [
-        grep { $_ ne 'meta' } @{ Class::Inspector->functions('Trinity::Transaction') }
-    ],
-);
-
-{ # alias
-    no warnings 'once';
-    *txn = \&transaction;
-}
-
 sub namespace {
     my $self = shift;
     my $namespace;

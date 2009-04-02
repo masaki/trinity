@@ -6,7 +6,7 @@ has 'application' => (
     is       => 'rw',
     isa      => 'Trinity::Application',
     weak_ref => 1,
-    handles  => ['logger'],
+    handles  => [qw(transaction txn logger)],
 );
 
 { # alias
@@ -34,6 +34,10 @@ Trinity::Component
 =head1 METHODS
 
 =head2 application, app
+
+=head2 transaction, txn
+
+=head2 logger
 
 =head2 suffix
 
