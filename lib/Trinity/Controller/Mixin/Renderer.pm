@@ -26,6 +26,7 @@ sub render {
         }
     }
 
+    # TODO: path detection algorithm
     unless (exists $args{template}) {
         $args{template} = $self->txn->action->namespace;
     }
