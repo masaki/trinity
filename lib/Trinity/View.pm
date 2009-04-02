@@ -1,8 +1,17 @@
 package Trinity::View;
 
 use Mouse;
+use MouseX::AttributeHelpers;
 
 extends 'Trinity::Component';
+
+has 'accept_formats' => (
+    metaclass => 'Collection::Array',
+    is        => 'rw',
+    isa       => 'ArrayRef',
+    default   => sub { [] },
+    provides  => { find => 'accepts' },
+);
 
 no Mouse;
 
@@ -11,6 +20,10 @@ no Mouse;
 =head1 NAME
 
 Trinity::View
+
+=head1 METHODS
+
+=head2 accepts
 
 =head1 AUTHOR
 
