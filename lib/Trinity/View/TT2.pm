@@ -42,7 +42,7 @@ sub render {
         $options->{PROCESS} = $self->_templatize($name, $format);
     }
 
-    $self->engine->process($template, $vars, \my $output, $options);
+    $self->renderer->process($template, $vars, \my $output, $options);
     return $output;
 }
 
