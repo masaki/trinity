@@ -9,11 +9,11 @@ sub redirect {
     my ($self, $uri, %args) = @_;
 
     if ($uri) {
-        $self->res->location($uri);
-        $self->res->status($args{status} || HTTP_FOUND);
+        $self->txn->res->location($uri);
+        $self->txn->res->status($args{status} || HTTP_FOUND);
     }
 
-    return $self->res->location;
+    return $self->txn->res->location;
 }
 
 sub sendfile {
