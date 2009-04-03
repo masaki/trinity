@@ -20,6 +20,7 @@ sub _templatize {
     return join '.', $name, $format, $self->extension;
 }
 
+# TODO: 後で部分的に共通化できるはず
 sub render {
     my ($self, %args) = @_;
 
@@ -28,7 +29,7 @@ sub render {
     $template = $self->_templatize($template, $format);
 
     my $vars = {
-        %{ $self->txn->stash },
+        %{ $args{stash}  ? $args{stash}  : $self->txn->stash },
         %{ $args{locals} ? $args{locals} : {} },
     };
 
