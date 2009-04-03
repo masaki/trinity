@@ -1,7 +1,6 @@
 package Trinity::View;
 
 use Mouse;
-use MouseX::AttributeHelpers;
 
 extends 'Trinity::Component';
 
@@ -18,10 +17,10 @@ has 'extension' => (
     required => 1,
 );
 
-has 'engine' => (is => 'rw');
-
-sub render {
-}
+has 'renderer' => (
+    is         => 'rw',
+    lazy_build => 1,
+);
 
 no Mouse;
 
@@ -37,7 +36,7 @@ Trinity::View
 
 =head2 extension
 
-=head2 engine
+=head2 renderer
 
 =head1 AUTHOR
 

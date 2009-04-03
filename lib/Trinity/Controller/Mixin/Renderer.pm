@@ -3,7 +3,7 @@ package Trinity::Controller::Mixin::Renderer;
 use Mouse::Role;
 use PadWalker ();
 
-requires qw(app txn);
+requires qw(app txn namespace);
 
 sub render {
     my ($self, @args) = @_;
@@ -15,7 +15,7 @@ sub render {
         $args{locals} = $self->_build_local_vars;
     }
     unless (exists $args{format}) {
-        $args{format} = $self->txn->req->format || 'html';
+        $args{format} = $self->txn->req->format;
     }
 
     # has thing (isa model, really ?)
@@ -26,12 +26,15 @@ sub render {
         }
     }
 
-    # TODO: path detection algorithm
     unless (exists $args{template}) {
-        $args{template} = $self->txn->action->namespace;
+        # Controller::Foo#bar -> foo/bar
+        my $action = [ caller(1) ]->[3];
+        $action =~ s/.+:://; 
+        $args{template} = join '/', $self->namespace, $action;
     }
     unless (exists $args{layouts}) {
-        $args{layouts} = 'layouts/' . $self->txn->action->path;
+        # Controller::Foo -> layouts/foo
+        $args{layouts} = 'layouts/' . $self->namespace;
     }
 
     # forward templates
