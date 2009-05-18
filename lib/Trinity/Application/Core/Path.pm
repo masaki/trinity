@@ -67,11 +67,11 @@ Trinity::Application::Core::Path
 
 =head1 METHODS
 
+=head2 $app->path_to(@path)
+
 =head2 $app->home
 
-=head2 $app->root
-
-=head2 $app->path_to(@path)
+=head2 $app->public
 
 =head1 AUTHOR
 
