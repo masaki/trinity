@@ -1,6 +1,6 @@
 package Trinity::Application;
 
-use Mouse;
+use Any::Moose;
 use Module::Pluggable::Object;
 use Trinity::Utils;
 
@@ -63,7 +63,7 @@ sub load_component {
         return $self->components->{$fullname};
     }
 
-    eval { Mouse::load_class($fullname) } or return;
+    eval { Any::Moose::load_class($fullname) } or return;
     my $prefix = $self->meta->name;
     (my $suffix = $fullname) =~ s/$prefix\:://;
 
@@ -116,7 +116,7 @@ sub setup {
     return $self;
 }
 
-no Mouse;
+no Any::Moose;
 __PACKAGE__->meta->make_immutable;
 
 =head1 NAME
