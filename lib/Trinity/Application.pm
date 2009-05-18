@@ -1,7 +1,6 @@
 package Trinity::Application;
 
 use Mouse;
-use HTTP::Engine::Response;
 use Module::Pluggable::Object;
 use Trinity::Utils;
 
@@ -117,15 +116,8 @@ sub setup {
     return $self;
 }
 
-sub handle_request {
-    my ($self, $req) = @_;
-    # TODO: not implemented yet
-    return HTTP::Engine::Response->new;
-}
-
 no Mouse;
-
-1;
+__PACKAGE__->meta->make_immutable;
 
 =head1 NAME
 
