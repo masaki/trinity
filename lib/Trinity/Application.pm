@@ -1,6 +1,7 @@
 package Trinity::Application;
 
 use Any::Moose;
+use Any::Moose 'X::AttributeHelpers';
 use Module::Pluggable::Object;
 use Trinity::Utils;
 
@@ -31,67 +32,53 @@ sub setup_config {
     shift->config; # initialize
 }
 
-has 'components' => (
-    is      => 'rw',
-    isa     => 'HashRef',
-    lazy    => 1,
-    default => sub { +{} },
+has 'router';
+
+has 'controllers' => (
+    is         => 'rw',
+    isa        => 'ArrayRef',
+    metaclass  => 'Collection::Array',
+    lazy       => 1,
+    default    => sub { [] },
+    auto_deref => 1,
+    provides   => {
+        push => 'add_controller',
+    },
+    curries    => {
+        find => {
+            controller => sub {
+                my ($self, $body, $shortname) = @_;
+                $body->($self, sub { $_->shortname eq $shortname });
+            },
+        },
+    },
 );
 
-{
-    no strict 'refs';
-    for my $keyword (qw/Model View Controller/) {
-        *{ lc $keyword } = sub {
-            my ($self, $name) = @_;
-            return unless defined $name;
-
-            my $fullname = join '::', $self->meta->name, $keyword, $name;
-            return $self->load_component($fullname);
-        };
-
-        *{ lc($keyword) . 's' } = sub {
-            my $self = shift;
-            return grep { $_->meta->name =~ /::${keyword}::/ } values %{ $self->components };
-        };
-    }
-}
-
-sub load_component {
-    my ($self, $fullname) = @_;
-
-    if (exists $self->components->{$fullname}) {
-        return $self->components->{$fullname};
-    }
-
-    eval { Any::Moose::load_class($fullname) } or return;
-    my $prefix = $self->meta->name;
-    (my $suffix = $fullname) =~ s/$prefix\:://;
-
-    my $config = $self->config->{$suffix} || {};
-    $self->components->{$fullname} = $fullname->new(app => $self, %$config);
-}
-
-sub setup_components {
+sub setup_controllers {
     my $self = shift;
 
-    my @paths = qw/::Controller ::View ::Model/;
-    my $appname = $self->meta->name;
     my $locator = Module::Pluggable::Object->new(
         inner       => 1,
-        search_path => [ map { $appname . $_ } @paths ],
+        search_path => [ $self->meta->name . '::Controller' ],
     );
 
-    for my $component ($locator->plugins) {
-        $self->load_component($component);
+    for my $fullname ($locator->plugins) {
+        $self->load_controller($fullname);
     }
 }
 
-has 'dispatcher' => (
-    is      => 'rw',
-);
+sub load_controller {
+    my ($self, $fullname) = @_;
 
-sub setup_dispatcher {
-    # TODO: not implemented yet
+    eval { Any::Moose::load_class($fullname) } or return;
+
+    my $suffix = Trinity::Utils::to_classsuffix($fullname);
+    my $config = $self->config->{$suffix} || {};
+
+    my $controller = $fullname->new(app => $self, %$config);
+    $self->add_controller($controller);
+
+    return $controller;
 }
 
 has 'setup_finished' => (
@@ -106,11 +93,9 @@ sub setup {
     my $self = shift;
 
     unless ($self->setup_finished) {
-        $self->setup_layouts    if $self->can('setup_layouts');
-        $self->setup_config     if $self->can('setup_config');
-        $self->setup_logger     if $self->can('setup_logger');
-        $self->setup_components if $self->can('setup_components');
-        $self->setup_dispatcher if $self->can('setup_dispatcher');
+        $self->setup_config      if $self->can('setup_config');
+        $self->setup_router      if $self->can('setup_router');
+        $self->setup_controllers if $self->can('setup_controllers');
     }
 
     return $self;
