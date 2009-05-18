@@ -1,6 +1,6 @@
 package Trinity::Application::Core::Logger;
 
-use Mouse::Role;
+use Any::Moose '::Role';
 use Log::Log4perl;
 use Trinity::Utils;
 
@@ -11,8 +11,6 @@ has 'logger' => (
     isa        => 'Log::Log4perl',
     lazy_build => 1,
 );
-
-sub setup_logger { shift->logger }
 
 sub _build_logger {
     my $self = shift;
@@ -45,8 +43,7 @@ sub _build_logger {
     return Log::Log4perl->get_logger($name);
 }
 
-no Mouse::Role;
-
+no Any::Moose '::Role';
 1;
 
 =head1 NAME
