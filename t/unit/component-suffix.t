@@ -3,17 +3,17 @@ use Test::Base;
 plan tests => 1*blocks;
 
 do {
-    package MyApp::Model::Foo;
-    use Trinity::Class isa => 'Model';
+#    package MyApp::Model::Foo;
+#    use Trinity::Class isa => 'Model';
 
-    package MyApp::Model::Bar::Baz;
-    use Trinity::Class isa => 'Model';
+#    package MyApp::Model::Bar::Baz;
+#    use Trinity::Class isa => 'Model';
 
-    package MyApp::View::Foo;
-    use Trinity::Class isa => 'Model';
+#    package MyApp::View::Foo;
+#    use Trinity::Class isa => 'Model';
 
-    package MyApp::View::Bar::Baz;
-    use Trinity::Class isa => 'View';
+#    package MyApp::View::Bar::Baz;
+#    use Trinity::Class isa => 'View';
 
     package MyApp::Controller::Foo;
     use Trinity::Class isa => 'Controller';
@@ -23,11 +23,11 @@ do {
 };
 
 do { 
-    package MyApp::Web::Model::Quux;
-    use Trinity::Class isa => 'Model';
+#    package MyApp::Web::Model::Quux;
+#    use Trinity::Class isa => 'Model';
 
-    package MyApp::Web::View::Quux;
-    use Trinity::Class isa => 'View';
+#    package MyApp::Web::View::Quux;
+#    use Trinity::Class isa => 'View';
 
     package MyApp::Web::Controller::Quux;
     use Trinity::Class isa => 'Controller';
@@ -43,30 +43,6 @@ run {
 }
 
 __END__
-===
---- component: MyApp::Model::Foo
---- suffix: Foo
-
-===
---- component: MyApp::Model::Bar::Baz
---- suffix: Bar::Baz
-
-===
---- component: MyApp::Web::Model::Quux
---- suffix: Quux
-
-===
---- component: MyApp::View::Foo
---- suffix: Foo
-
-===
---- component: MyApp::View::Bar::Baz
---- suffix: Bar::Baz
-
-===
---- component: MyApp::Web::View::Quux
---- suffix: Quux
-
 ===
 --- component: MyApp::Controller::Foo
 --- suffix: Foo

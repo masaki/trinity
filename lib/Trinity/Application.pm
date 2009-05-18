@@ -48,7 +48,7 @@ has 'controllers' => (
         find => {
             controller => sub {
                 my ($self, $body, $shortname) = @_;
-                $body->($self, sub { $_->shortname eq $shortname });
+                $body->($self, sub { $_[0]->shortname eq $shortname });
             },
         },
     },
@@ -70,9 +70,14 @@ sub setup_controllers {
 sub load_controller {
     my ($self, $fullname) = @_;
 
+    my $shortname = $fullname->shortname;
+    if (my $controller = $self->controller($shortname)) {
+        return $controller;
+    }
+
     eval { Any::Moose::load_class($fullname) } or return;
 
-    my $suffix = Trinity::Utils::to_classsuffix($fullname);
+    my $suffix = $fullname->suffix;
     my $config = $self->config->{$suffix} || {};
 
     my $controller = $fullname->new(app => $self, %$config);

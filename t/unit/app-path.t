@@ -15,8 +15,8 @@ do {
     my $app = TestApp->new;
 
     is $app->home => $home, 'home ok';
-    is $app->root => $home->subdir('root'), 'root ok';
-    is $app->path_to('root/favicon.ico'), $home->file('root', 'favicon.ico'), 'path_to ok';
+    is $app->public => $home->subdir('public'), 'public ok';
+    is $app->path_to('public/favicon.ico'), $home->file('public', 'favicon.ico'), 'path_to ok';
 }
 
 { # INC
@@ -26,8 +26,8 @@ do {
     my $app = TestApp->new;
 
     is $app->home => $home, 'home ok';
-    is $app->root => $home->subdir('root'), 'root ok';
-    is $app->path_to('root/favicon.ico'), $home->file('root', 'favicon.ico'), 'path_to ok';
+    is $app->public => $home->subdir('public'), 'public ok';
+    is $app->path_to('public/favicon.ico'), $home->file('public', 'favicon.ico'), 'path_to ok';
 }
 
 { # Cwd
@@ -36,6 +36,6 @@ do {
     my $app = TestApp->new;
 
     is $app->home => $home, 'home ok';
-    is $app->root => $home->subdir('root'), 'root ok';
-    is $app->path_to('root/favicon.ico'), $home->file('root', 'favicon.ico'), 'path_to ok';
+    is $app->public => $home->subdir('public'), 'public ok';
+    is $app->path_to('public/favicon.ico'), $home->file('public', 'favicon.ico'), 'path_to ok';
 }

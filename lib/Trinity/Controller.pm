@@ -10,6 +10,15 @@ has '+application' => (
     handles => ['logger', 'home', 'root', 'path_to', 'model', 'view']
 );
 
+sub shortname {
+    my $self = shift;
+    my $shortname;
+    if ($self->meta->name =~ /^.+?::Controller::(.+)$/) {
+        $shortname = $1;
+    }
+    return $shortname;
+}
+
 sub namespace {
     my $self = shift;
     my $namespace;

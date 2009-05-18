@@ -27,7 +27,7 @@ sub app {
     ok $logger->is_debug;
 
     $logger->debug($env);
-    ok -s "$FindBin::Bin/log/$env.log" > 0;
+    ok(-s "$FindBin::Bin/log/$env.log" > 0);
 }
 
 { # test
