@@ -1,7 +1,7 @@
-package Trinity::Application::Core::Layouts;
+package Trinity::Application::Core::Path;
 
-use Mouse::Role;
-use MouseX::Types::Path::Class;
+use Any::Moose '::Role';
+use Any::Moose 'X::Types::Path::Class';
 use Cwd qw(getcwd);
 use Path::Class qw(file dir);
 use Trinity::Utils;
@@ -66,13 +66,12 @@ sub _setup_home_from_path {
     }
 }
 
-no Mouse::Role;
-
+no Any::Moose '::Role';
 1;
 
 =head1 NAME
 
-Trinity::Application::Core::Layouts
+Trinity::Application::Core::Path
 
 =head1 METHODS
 

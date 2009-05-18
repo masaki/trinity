@@ -5,7 +5,7 @@ use Module::Pluggable::Object;
 use Trinity::Utils;
 
 with qw(
-    Trinity::Application::Core::Layouts
+    Trinity::Application::Core::Path
     Trinity::Application::Core::Logger
 );
 
