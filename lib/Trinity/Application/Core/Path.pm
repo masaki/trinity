@@ -20,6 +20,8 @@ sub path_to {
     return -d $path ? $path : Path::Class::File->new($path);
 }
 
+sub public { $_[0]->path_to('public') }
+
 sub _build_home {
     my $self = shift;
 
