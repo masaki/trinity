@@ -18,24 +18,25 @@ do {
 run {
     my $block = shift;
 
-    my $controller = $block->controller->new;
+    my $controller = $block->controller;
 
-    is $controller->namespace => $block->namespace, 'namespace ok';
-    is $controller->suffix => $block->suffix, 'suffix ok';
+    my $instance = $controller->new;
+    is $instance->_suffix => $block->suffix, "$controller suffix ok";
+    is $instance->_namespace => $block->namespace, "$controller namespace ok";
 }
 
 __END__
 ===
 --- controller: MyApp::Controller::Foo
+--- suffix: Controller::Foo
 --- namespace: foo
---- suffix: Foo
 
 ===
 --- controller: MyApp::Controller::Bar::Baz
+--- suffix: Controller::Bar::Baz
 --- namespace: bar/baz
---- suffix: Bar::Baz
 
 ===
 --- controller: MyApp::Web::Controller::Quux
+--- suffix: Controller::Quux
 --- namespace: quux
---- suffix: Quux

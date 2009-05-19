@@ -1,47 +1,35 @@
 package Trinity::Controller;
 
-use Mouse;
-use Class::Inspector;
-use Trinity::Transaction;
+use Any::Moose;
 
-extends 'Trinity::Component';
-
-has '+application' => (
-    handles => ['logger', 'home', 'root', 'path_to', 'model', 'view']
+has '_suffix' => (
+    is      => 'ro',
+    isa     => 'Str',
+    lazy    => 1,
+    default => sub { [ $_[0]->meta->name =~ /::(Controller::.+)$/ ]->[0] },
 );
 
-sub shortname {
-    my $self = shift;
-    my $shortname;
-    if ($self->meta->name =~ /^.+?::Controller::(.+)$/) {
-        $shortname = $1;
-    }
-    return $shortname;
-}
+has '_namespace' => (
+    is      => 'ro',
+    isa     => 'Str',
+    lazy    => 1,
+    default => sub {
+        my $self = shift;
+        my $namespace;
+        if ($self->meta->name =~ /::Controller::(.+)$/) {
+            $namespace = lc $1;
+            $namespace =~ s!::!/!g;
+        }
+        return $namespace;
+    },
+);
 
-sub namespace {
-    my $self = shift;
-    my $namespace;
-    if ($self->meta->name =~ /^.+?::Controller::(.+)$/) {
-        $namespace = lc $1;
-        $namespace =~ s!::!/!g;
-    }
-    return $namespace;
-}
-
-no Mouse;
-
-1;
+no Any::Moose;
+__PACKAGE__->meta->make_immutable;
 
 =head1 NAME
 
 Trinity::Controller
-
-=head1 METHODS
-
-=head2 transaction, txn
-
-=head2 namespace
 
 =head1 AUTHOR
 
