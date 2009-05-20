@@ -2,27 +2,17 @@ package Trinity::Controller;
 
 use Any::Moose;
 
-has '_suffix' => (
-    is      => 'ro',
-    isa     => 'Str',
-    lazy    => 1,
-    default => sub { [ $_[0]->meta->name =~ /::(Controller::.+)$/ ]->[0] },
-);
+sub _suffix {
+    my ($suffix) = $_[0]->meta->name =~ /::(Controller::.+)$/;
+    $suffix;
+}
 
-has '_namespace' => (
-    is      => 'ro',
-    isa     => 'Str',
-    lazy    => 1,
-    default => sub {
-        my $self = shift;
-        my $namespace;
-        if ($self->meta->name =~ /::Controller::(.+)$/) {
-            $namespace = lc $1;
-            $namespace =~ s!::!/!g;
-        }
-        return $namespace;
-    },
-);
+sub _namespace {
+    my $namespace = lc $_[0]->_suffix;
+    $namespace =~ s/^controller:://;
+    $namespace =~ s!::!/!g;
+    $namespace;
+}
 
 no Any::Moose;
 __PACKAGE__->meta->make_immutable;

@@ -42,17 +42,23 @@ has 'controllers' => (
     default    => sub { [] },
     auto_deref => 1,
     provides   => {
-        push => 'add_controller',
+        push => 'push_controller',
     },
     curries    => {
         find => {
-            controller => sub {
-                my ($self, $body, $shortname) = @_;
-                $body->($self, sub { $_[0]->shortname eq $shortname });
+            find_controller => sub {
+                my ($self, $body, $name) = @_;
+                my $controller = $self->meta->name . '::Controller::' . $name;
+                $body->($self, sub { $_[0]->meta->name eq $controller });
             },
         },
     },
 );
+
+sub controller {
+    my ($self, $name) = @_;
+    $self->find_controller($name) || $self->load_controller($name);
+}
 
 sub setup_controllers {
     my $self = shift;
@@ -62,28 +68,35 @@ sub setup_controllers {
         search_path => [ $self->meta->name . '::Controller' ],
     );
 
-    for my $fullname ($locator->plugins) {
-        $self->load_controller($fullname);
+    for my $class ($locator->plugins) {
+        $self->load_controller($class);
     }
 }
 
 sub load_controller {
-    my ($self, $fullname) = @_;
+    my ($self, $class) = @_;
 
-    my $shortname = $fullname->shortname;
-    if (my $controller = $self->controller($shortname)) {
-        return $controller;
+    unless ($class =~ /@{[ $self->meta->name ]}/) {
+        $class = $self->meta->name . '::Controller::' . $class;
     }
+    eval { Any::Moose::load_class($class) } or return;
 
-    eval { Any::Moose::load_class($fullname) } or return;
+    my $config = {
+        #%{ $class->config },
+        %{ $self->config->{$class->_suffix} || {} },
+    };
 
-    my $suffix = $fullname->suffix;
-    my $config = $self->config->{$suffix} || {};
-
-    my $controller = $fullname->new(app => $self, %$config);
-    $self->add_controller($controller);
+    my $controller = $class->new(app => $self, %$config);
+    $self->register_controller($controller);
 
     return $controller;
+}
+
+sub register_controller {
+    my ($self, $controller) = @_;
+
+    $self->push_controller($controller);
+    # TODO: not implemented yet
 }
 
 has 'setup_finished' => (
