@@ -3,6 +3,7 @@ package Trinity::Application;
 use Any::Moose;
 use Any::Moose 'X::AttributeHelpers';
 use Module::Pluggable::Object;
+use HTTP::Router;
 use Trinity::Utils;
 
 with qw(
@@ -28,11 +29,12 @@ has 'config' => (
     default => sub { +{} },
 );
 
-sub setup_config {
-    shift->config; # initialize
-}
-
-has 'router';
+has 'router' => (
+    is      => 'rw',
+    isa     => 'HTTP::Router',
+    lazy    => 1,
+    default => sub { HTTP::Router->new },
+);
 
 has 'controllers' => (
     is         => 'rw',
@@ -76,6 +78,13 @@ sub setup {
     }
 
     return $self;
+}
+
+sub setup_config {
+    shift->config; # initialize
+}
+
+sub setup_router {
 }
 
 sub setup_controllers {
