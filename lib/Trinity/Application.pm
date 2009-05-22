@@ -73,19 +73,14 @@ sub setup {
         $self->logger;
 
         $self->setup_config      if $self->can('setup_config');
-        $self->setup_router      if $self->can('setup_router');
         $self->setup_controllers if $self->can('setup_controllers');
+        $self->setup_router      if $self->can('setup_router');
     }
 
     return $self;
 }
 
-sub setup_config {
-    shift->config; # initialize
-}
-
-sub setup_router {
-}
+sub setup_config { $_[0]->config }
 
 sub setup_controllers {
     my $self = shift;
@@ -97,6 +92,17 @@ sub setup_controllers {
 
     for my $class ($locator->plugins) {
         $self->load_controller($class);
+    }
+}
+
+sub setup_router {
+    my $self = shift;
+
+    # exists router.pl
+    my $file = $self->path_to('config', 'router.pl');
+    if (-f $file) {
+        my $router = eval require $file;
+        $self->router($router) if defined $router;
     }
 }
 
