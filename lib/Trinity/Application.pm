@@ -54,9 +54,28 @@ has 'controllers' => (
     },
 );
 
-sub controller {
-    my ($self, $name) = @_;
-    $self->find_controller($name) || $self->load_controller($name);
+has 'setup_finished' => (
+    is      => 'rw',
+    isa     => 'Bool',
+    default => 0,
+);
+
+after 'setup' => sub { shift->setup_finished(1) };
+
+sub setup {
+    my $self = shift;
+
+    unless ($self->setup_finished) {
+        # build
+        $self->home;
+        $self->logger;
+
+        $self->setup_config      if $self->can('setup_config');
+        $self->setup_router      if $self->can('setup_router');
+        $self->setup_controllers if $self->can('setup_controllers');
+    }
+
+    return $self;
 }
 
 sub setup_controllers {
@@ -70,6 +89,11 @@ sub setup_controllers {
     for my $class ($locator->plugins) {
         $self->load_controller($class);
     }
+}
+
+sub controller {
+    my ($self, $name) = @_;
+    $self->find_controller($name) || $self->load_controller($name);
 }
 
 sub load_controller {
@@ -89,26 +113,6 @@ sub load_controller {
     $self->register_controller($controller);
 
     return $controller;
-}
-
-has 'setup_finished' => (
-    is      => 'rw',
-    isa     => 'Bool',
-    default => 0,
-);
-
-after 'setup' => sub { shift->setup_finished(1) };
-
-sub setup {
-    my $self = shift;
-
-    unless ($self->setup_finished) {
-        $self->setup_config      if $self->can('setup_config');
-        $self->setup_router      if $self->can('setup_router');
-        $self->setup_controllers if $self->can('setup_controllers');
-    }
-
-    return $self;
 }
 
 no Any::Moose;
