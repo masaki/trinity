@@ -42,14 +42,13 @@ has 'controllers' => (
     default    => sub { [] },
     auto_deref => 1,
     provides   => {
-        push => 'push_controller',
+        push => 'register_controller',
     },
     curries    => {
         find => {
             find_controller => sub {
                 my ($self, $body, $name) = @_;
-                my $controller = $self->meta->name . '::Controller::' . $name;
-                $body->($self, sub { $_[0]->meta->name eq $controller });
+                $body->($self, sub { $_[0]->meta->name =~ /::Controller::${name}/ });
             },
         },
     },
@@ -90,13 +89,6 @@ sub load_controller {
     $self->register_controller($controller);
 
     return $controller;
-}
-
-sub register_controller {
-    my ($self, $controller) = @_;
-
-    $self->push_controller($controller);
-    # TODO: not implemented yet
 }
 
 has 'setup_finished' => (

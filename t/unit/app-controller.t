@@ -14,6 +14,6 @@ do {
 my $app = TestApp->new;
 $app->setup_controllers;
 
-ok $app->controller('Foo'), 'Controller::Foo ok';
-ok $app->controller('Bar'), 'Controller::Bar ok';
+isa_ok $app->controller('Foo') => 'TestApp::Controller::Foo', 'Controller::Foo ok';
+isa_ok $app->controller('Bar') => 'TestApp::Controller::Bar', 'Controller::Bar ok';
 is @{[ $app->controllers ]} => 2, 'has 2 controllers';
