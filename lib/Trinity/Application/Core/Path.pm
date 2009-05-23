@@ -1,7 +1,7 @@
 package Trinity::Application::Core::Path;
 
-use Any::Moose '::Role';
-use Any::Moose 'X::Types::Path::Class';
+use Mouse::Role;
+use MouseX::Types::Path::Class;
 use Cwd ();
 use Path::Class::File ();
 use Path::Class::Dir ();
@@ -58,7 +58,7 @@ sub _setup_home_from_path {
     return -d $home ? $home : undef;
 }
 
-no Any::Moose '::Role';
+no Mouse::Role;
 1;
 
 =head1 NAME

@@ -1,6 +1,6 @@
 package Trinity::Controller;
 
-use Any::Moose;
+use Mouse;
 
 sub _suffix {
     my ($suffix) = $_[0]->meta->name =~ /::(Controller::.+)$/;
@@ -14,7 +14,7 @@ sub _namespace {
     $namespace;
 }
 
-no Any::Moose;
+no Mouse;
 __PACKAGE__->meta->make_immutable;
 
 =head1 NAME

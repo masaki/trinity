@@ -1,7 +1,7 @@
 package Trinity::Application;
 
-use Any::Moose;
-use Any::Moose 'X::AttributeHelpers';
+use Mouse;
+use MouseX::AttributeHelpers;
 use Module::Pluggable::Object;
 use HTTP::Router;
 use Trinity::Utils;
@@ -117,7 +117,7 @@ sub load_controller {
     unless ($class =~ /@{[ $self->meta->name ]}/) {
         $class = $self->meta->name . '::Controller::' . $class;
     }
-    eval { Any::Moose::load_class($class) } or return;
+    eval { Mouse::load_class($class) } or return;
 
     my $config = {
         #%{ $class->config },
@@ -130,7 +130,7 @@ sub load_controller {
     return $controller;
 }
 
-no Any::Moose;
+no Mouse;
 __PACKAGE__->meta->make_immutable;
 
 =head1 NAME

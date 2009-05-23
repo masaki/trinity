@@ -1,6 +1,6 @@
 package Trinity::Application::Core::Logger;
 
-use Any::Moose '::Role';
+use Mouse::Role;
 use Log::Log4perl;
 use Trinity::Utils;
 
@@ -43,7 +43,7 @@ sub _build_logger {
     return Log::Log4perl->get_logger($name);
 }
 
-no Any::Moose '::Role';
+no Mouse::Role;
 1;
 
 =head1 NAME
