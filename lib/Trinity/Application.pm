@@ -105,15 +105,18 @@ sub setup_router {
 
 sub controller {
     my ($self, $name) = @_;
-    $self->find_controller($name) || $self->load_controller($name);
+
+    if (my $controller = $self->find_controller($name)) {
+        return $controller;
+    }
+
+    my $class = $self->meta->name . '::Controller::' . $name;
+    return $self->load_controller($class);
 }
 
 sub load_controller {
     my ($self, $class) = @_;
 
-    unless ($class =~ /@{[ $self->meta->name ]}/) {
-        $class = $self->meta->name . '::Controller::' . $class;
-    }
     eval { Mouse::load_class($class) } or return;
 
     my $config = {
