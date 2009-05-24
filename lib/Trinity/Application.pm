@@ -2,25 +2,17 @@ package Trinity::Application;
 
 use Mouse;
 use MouseX::AttributeHelpers;
+use Data::Util;
 use Module::Pluggable::Object;
+use HTTP::Engine::Response;
 use HTTP::Router;
+use Trinity::Context;
 use Trinity::Utils;
 
 with qw(
     Trinity::Application::Core::Path
     Trinity::Application::Core::Logger
 );
-
-has 'transaction' => (
-    is       => 'rw',
-    isa      => 'Trinity::Transaction',
-    weak_ref => 1,
-);
-
-{ # alias
-    no warnings 'once';
-    *txn = \&transaction;
-}
 
 has 'config' => (
     is      => 'rw',
@@ -128,6 +120,34 @@ sub load_controller {
     $self->register_controller($controller);
 
     return $controller;
+}
+
+sub handle_request {
+    my ($self, $req) = @_;
+    my $res = HTTP::Engine::Response->new;
+
+    if (my $match = $self->router->match($req)) {
+        my $controller = $self->controller($match->params->{controller});
+        my $code = Data::Util::get_code_ref($controller->meta->name, $match->params->{action});
+
+        my $c = Trinity::Context->new(
+            app => $self,
+            req => $req,
+            res => $res,
+        );
+        $code->($controller, $c, $match->captures);
+
+        if (my $error = $c->error->[-1]) {
+            chomp $error;
+            $self->log->error(qq'Caught exception in engine "$error"');
+        }
+    }
+    else {
+        $res->status(404);
+        $res->body('404 Not Found');
+    }
+
+    return $res;
 }
 
 no Mouse;
