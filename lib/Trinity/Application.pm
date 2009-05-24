@@ -120,6 +120,7 @@ sub load_controller {
     eval { Mouse::load_class($class) } or return;
 
     my $config = {
+        # TODO: need controller class config
         #%{ $class->config },
         %{ $self->config->{$class->_suffix} || {} },
     };
