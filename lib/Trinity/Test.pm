@@ -1,12 +1,14 @@
 package Trinity::Test;
 
 use Mouse;
-use Test::More ();
+use Test::Builder;
 use Data::Util;
 use HTTP::Cookies;
 use HTTP::Engine;
 use HTTP::Request;
 use URI;
+
+our $Test = Test::Builder->new;
 
 sub import {
     my ($class, $appclass, %options) = @_;
@@ -38,18 +40,31 @@ sub import {
 
     my $get = sub { $request->(GET => @_)->content };
 
-    my $test = Test::More->builder;
-
     my %methods = (
         request => $request,
         get     => $get,
 
-        content_is   => sub { $test->is_eq($get->(shift), @_) },
-        content_like => sub { $test->like($get->(shift), @_) },
+        content_is => sub {
+            my ($path, $content, $message) = @_;
+            $Test->is_eq($get->($path), $content, $message);
+        },
+        content_like => sub {
+            my ($path, $content, $message) = @_;
+            $Test->like($get->($path), $content, $message);
+        },
 
-        action_ok       => sub { $test->ok($request->(shift)->is_success, @_) },
-        action_redirect => sub { $test->ok($request->(shift)->is_redirect, @_) },
-        action_notfound => sub { $test->is_eq($request->(shift)->code => 404, @_) },
+        action_ok => sub {
+            my ($path, $message) = @_;
+            $Test->ok($request->($path)->is_success, $message);
+        },
+        action_redirect => sub {
+            my ($path, $message) = @_;
+            $Test->ok($request->($path)->is_redirect, $message);
+        },
+        action_notfound => sub {
+            my ($path, $message) = @_;
+            $Test->is_eq($request->($path)->code, 404, $message);
+        },
     );
 
     my $caller = caller;
