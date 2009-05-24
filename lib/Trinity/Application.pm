@@ -93,8 +93,13 @@ sub setup_router {
     # exists router.pl
     my $file = $self->path_to('config', 'router.pl');
     if (-f $file) {
-        my $router = eval require $file;
-        $self->router($router) if defined $router;
+        local $@;
+        my $router = eval qq{
+            package @{[ $self->meta->name ]}::Router;
+            use HTTP::Router::Declare;
+            @{[ $file->slurp ]};
+        };
+        $self->router($router) if not $@ and defined $router;
     }
 }
 
