@@ -1,14 +1,15 @@
-use Test::More 'no_plan';
+use strict;
+use Test::More tests => 15;
 use FindBin;
-use File::Path;
+#use File::Path;
 
 do {
     package TestApp;
     use Trinity::Class isa => 'Application';
 };
 
-BEGIN { mkpath "$FindBin::Bin/log" unless -d "$FindBin::Bin/log" }
-END { rmtree "$FindBin::Bin/log" if -d "$FindBin::Bin/log" }
+#BEGIN { mkpath "$FindBin::Bin/log" unless -d "$FindBin::Bin/log" }
+#END { rmtree "$FindBin::Bin/log" if -d "$FindBin::Bin/log" }
 
 sub app {
     local $ENV{TESTAPP_HOME} = $FindBin::Bin;
@@ -26,8 +27,8 @@ sub app {
     ok $logger->is_info;
     ok $logger->is_debug;
 
-    $logger->debug($env);
-    ok(-s "$FindBin::Bin/log/$env.log" > 0);
+#    $logger->debug($env);
+#    ok(-s "$FindBin::Bin/log/$env.log" > 0);
 }
 
 { # test
@@ -41,8 +42,8 @@ sub app {
     ok $logger->is_info;
     ok $logger->is_debug;
 
-    $logger->debug('test');
-    ok -s "$FindBin::Bin/log/$env.log" > 0;
+#    $logger->debug('test');
+#    ok -s "$FindBin::Bin/log/$env.log" > 0;
 }
 
 { # production
@@ -56,6 +57,6 @@ sub app {
     ok $logger->is_info;
     ok !$logger->is_debug, 'production is not debug mode';
 
-    $logger->debug($env);
-    is -s "$FindBin::Bin/log/$env.log" => 0, 'production is not debug logging';
+#    $logger->debug($env);
+#    is -s "$FindBin::Bin/log/$env.log" => 0, 'production is not debug logging';
 }

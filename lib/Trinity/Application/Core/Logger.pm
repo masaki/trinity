@@ -19,24 +19,25 @@ sub _build_logger {
     my $env   = lc Trinity::Utils::env_value($name, 'ENV') || 'development';
     my $level = $env eq 'production' ? 'INFO' : 'DEBUG';
 
-    my $file  = $self->path_to('log', "${env}.log");
-    $file->dir->mkpath unless -e $file->dir;
+#    my $file  = $self->path_to('log', "${env}.log");
+#    $file->dir->mkpath unless -e $file->dir;
 
     my $category = $name;
     $category =~ s/::/\./g;
 
     my %spec = (
-        "log4perl.category.$category" => "$level, Screen, File",
+#        "log4perl.category.$category" => "$level, Screen, File",
+        "log4perl.category.$category" => "$level, Screen",
 
         'log4perl.appender.Screen'                          => 'Log::Log4perl::Appender::ScreenColoredLevels',
         'log4perl.appender.Screen.layout'                   => 'Log::Log4perl::Layout::PatternLayout',
         'log4perl.appender.Screen.layout.ConversionPattern' => '[%p] %m%n',
 
-        'log4perl.appender.File'                          => 'Log::Log4perl::Appender::File',
-        'log4perl.appender.File.filename'                 => $file->stringify,
-        'log4perl.appender.File.utf8'                     => 1,
-        'log4perl.appender.File.layout'                   => 'Log::Log4perl::Layout::PatternLayout',
-        'log4perl.appender.File.layout.ConversionPattern' => '[%p] %m%n',
+#        'log4perl.appender.File'                          => 'Log::Log4perl::Appender::File',
+#        'log4perl.appender.File.filename'                 => $file->stringify,
+#        'log4perl.appender.File.utf8'                     => 1,
+#        'log4perl.appender.File.layout'                   => 'Log::Log4perl::Layout::PatternLayout',
+#        'log4perl.appender.File.layout.ConversionPattern' => '[%p] %m%n',
     );
 
     Log::Log4perl->init(\%spec); # mod_perl ok?
