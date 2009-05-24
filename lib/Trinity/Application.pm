@@ -42,7 +42,7 @@ has 'controllers' => (
         find => {
             find_controller => sub {
                 my ($self, $body, $name) = @_;
-                $body->($self, sub { $_[0]->meta->name =~ /::Controller::${name}/ });
+                $body->($self, sub { $_[0]->meta->name =~ /::Controller::${name}$/ });
             },
         },
     },
