@@ -6,12 +6,12 @@ extends 'Trinity::Controller';
 
 our @EXPORT = qw(GET);
 
-my %ACTION_CACHE;
+my %ROUTES;
 
 sub register_routes {
     my $self = shift;
-    for my $action (@{ $ACTION_CACHE{$self->meta->name} ||= [] }) {
-        $self->app->router->add_route(@$action);
+    for my $route (@{ $ROUTES{$self->meta->name} ||= [] }) {
+        $self->app->router->add_route(@$route);
     }
 }
 
@@ -25,7 +25,7 @@ sub GET {
     $conditions ||= {};
     $conditions->{method} = 'GET';
 
-    push @{ $ACTION_CACHE{$caller} ||= [] }, [
+    push @{ $ROUTES{$caller} ||= [] }, [
         $path,
         conditions => $conditions,
         params     => { code => $code },
