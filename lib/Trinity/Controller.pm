@@ -2,17 +2,18 @@ package Trinity::Controller;
 
 use Mouse;
 
-sub _suffix {
-    my ($suffix) = $_[0]->meta->name =~ /::(Controller::.+)$/;
-    $suffix;
-}
+sub suffix { [ $_[0]->meta->name =~ /::(Controller::.+)$/ ]->[0] }
 
-sub _namespace {
-    my $namespace = lc $_[0]->_suffix;
-    $namespace =~ s/^controller:://;
-    $namespace =~ s!::!/!g;
-    $namespace;
-}
+has namespace => (
+    is      => 'rw',
+    isa     => 'Str',
+    lazy    => 1,
+    default => sub {
+        my ($namespace) = $_[0]->meta->name =~ /::Controller::(.+)$/;
+        $namespace =~ s!::!/!g;
+        lc $namespace;
+    },
+);
 
 no Mouse;
 __PACKAGE__->meta->make_immutable;

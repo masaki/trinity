@@ -122,7 +122,7 @@ sub load_controller {
     my $config = {
         # TODO: need controller class config
         #%{ $class->config },
-        %{ $self->config->{$class->_suffix} || {} },
+        %{ $self->config->{$class->suffix} || {} },
     };
 
     my $controller = $class->new(app => $self, %$config);

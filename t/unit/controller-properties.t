@@ -21,8 +21,8 @@ run {
     my $controller = $block->controller;
 
     my $instance = $controller->new;
-    is $instance->_suffix => $block->suffix, "$controller suffix ok";
-    is $instance->_namespace => $block->namespace, "$controller namespace ok";
+    is $instance->suffix => $block->suffix, "$controller suffix ok";
+    is $instance->namespace => $block->namespace, "$controller namespace ok";
 }
 
 __END__
