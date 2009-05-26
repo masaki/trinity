@@ -101,6 +101,12 @@ sub setup_router {
         };
         $self->router($router) if not $@ and defined $router;
     }
+
+    # register actions
+    for my $controller ($self->controllers) {
+        next unless $controller->meta->has_method('register_actions');
+        $controller->register_actions;
+    }
 }
 
 sub controller {
