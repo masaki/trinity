@@ -20,6 +20,7 @@ sub import {
         else {
             $klass = "Trinity::${klass}";
         }
+        Mouse::load_class($klass);
     }
 
     my $meta = Mouse::Meta::Class->initialize($caller);
@@ -31,8 +32,10 @@ sub import {
 
         *{ $caller . '::meta' } = sub { $meta };
 
-        for my $keyword (@Mouse::EXPORT) {
-            *{ $caller . ':: ' . $keyword } = \&{ 'Mouse::' . $keyword };
+        for my $klass ($meta->linearized_isa, 'Mouse') {
+            for my $keyword (@{ $klass . '::EXPORT' }) {
+                *{ $caller . '::' . $keyword } = *{ $klass . '::' . $keyword }{CODE};
+            }
         }
     }
 }
