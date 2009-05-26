@@ -5,15 +5,19 @@ use Mouse;
 extends 'Trinity::Controller';
 
 our @EXPORT = qw(GET);
-our @ACTION_CACHE;
+
+my %ACTION_CACHE;
 
 sub register_routes {
-    for my $action (@ACTION_CACHE) {
-        $_[0]->app->router->add_route(@$action);
+    my $self = shift;
+    for my $action (@{ $ACTION_CACHE{$self->meta->name} ||= [] }) {
+        $self->app->router->add_route(@$action);
     }
 }
 
 sub GET {
+    my $caller = caller;
+
     my $code = ref $_[-1] eq 'CODE' ? pop : undef;
     return unless defined $code;
 
@@ -21,7 +25,7 @@ sub GET {
     $conditions ||= {};
     $conditions->{method} = 'GET';
 
-    push @ACTION_CACHE, [
+    push @{ $ACTION_CACHE{$caller} ||= [] }, [
         $path,
         conditions => $conditions,
         params     => { code => $code },
