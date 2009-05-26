@@ -2,6 +2,12 @@ package Trinity::Controller;
 
 use Mouse;
 
+has 'app' => (
+    is       => 'rw',
+    isa      => 'Trinity::Application',
+    weak_ref => 1,
+);
+
 sub suffix { [ $_[0]->meta->name =~ /::(Controller::.+)$/ ]->[0] }
 
 has namespace => (
