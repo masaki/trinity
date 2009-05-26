@@ -7,7 +7,7 @@ extends 'Trinity::Controller';
 our @EXPORT = qw(GET);
 our @ACTION_CACHE;
 
-sub register_actions {
+sub register_routes {
     for my $action (@ACTION_CACHE) {
         $_[0]->app->router->add_route(@$action);
     }

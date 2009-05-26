@@ -45,6 +45,9 @@ has 'controllers' => (
                 $body->($self, sub { $_[0]->meta->name =~ /::Controller::${name}$/ });
             },
         },
+        grep => {
+            routable_controllers => [ sub { $_[0]->isa('Trinity::Controller::Routes') } ],
+        },
     },
 );
 
@@ -103,9 +106,8 @@ sub setup_router {
     }
 
     # register actions
-    for my $controller ($self->controllers) {
-        next unless $controller->meta->has_method('register_actions');
-        $controller->register_actions;
+    for my $controller ($self->routable_controllers) {
+        $controller->register_routes;
     }
 }
 
